@@ -122,6 +122,58 @@
     color: var(--text);
   }
 
+  .copy-cmd {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0 4px;
+    padding: 8px 8px 8px 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .copy-cmd code {
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+    white-space: nowrap;
+    font-size: 12px;
+    background: none;
+    border: none;
+    padding: 0;
+    color: #e4e4e7;
+  }
+  .copy-cmd button {
+    flex: none;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 7px;
+    border: 1px solid rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.1);
+    color: var(--text);
+    cursor: pointer;
+  }
+  .copy-cmd button:hover { background: rgba(255,255,255,0.18); }
+
+  .settings-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin: 8px 0 4px;
+    padding: 8px 14px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text);
+    text-decoration: none;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 9px;
+  }
+  .settings-link:hover { background: rgba(255,255,255,0.18); }
+  .settings-link svg { width: 14px; height: 14px; flex: none; }
+
   .download {
     display: flex;
     align-items: center;
@@ -230,8 +282,28 @@
           <h2>Установлення</h2>
           <ol>
             <li>Відкрий <code>Dummy.English.dmg</code> і перетягни застосунок у Applications.</li>
-            <li>Під час першого запуску: правий клік → Open → Open. Якщо це не спрацює — System Settings → Privacy &amp; Security → Open Anyway.</li>
-            <li>Після запуску відкривай застосунок через значок у меню-барі.</li>
+            <li>
+              Mac попередить, що не може перевірити розробника (а іноді ще й
+              «зависає» на кілька секунд на першому запуску — це нормально).
+              Найнадійніше — відкрити Термінал (Cmd+Пробіл → напиши
+              <code>Terminal</code> → Enter), вставити цю команду (Cmd+V) і
+              натиснути Enter:
+              <div class="copy-cmd">
+                <code id="cmdText">xattr -cr "/Applications/Dummy English.app"</code>
+                <button type="button" id="copyCmdBtn">Копіювати</button>
+              </div>
+            </li>
+            <li>
+              Термінал не подобається? Спробуй правий клік на іконці → Open,
+              або кнопку нижче — вона одразу відкриє потрібний розділ
+              Налаштувань, де треба натиснути <b>Open Anyway</b> (підтвердь
+              паролем/Touch ID). Може так само трохи зависнути на перевірці.
+              <a class="settings-link" href="x-apple.systempreferences:com.apple.preference.security">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 0 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 0 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1-1.55V3a2 2 0 0 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg>
+                Відкрити Налаштування безпеки
+              </a>
+            </li>
+            <li>Після цього відкривай застосунок через значок у меню-барі.</li>
           </ol>
         </div>
       </div>
@@ -354,6 +426,25 @@
     if (!isMacDesktop) {
       document.getElementById('downloadBtn').hidden = true;
       document.getElementById('notMac').hidden = false;
+    }
+
+    const copyBtn = document.getElementById('copyCmdBtn');
+    const cmdText = document.getElementById('cmdText');
+    if (copyBtn && cmdText) {
+      copyBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(cmdText.textContent);
+          const original = copyBtn.textContent;
+          copyBtn.textContent = 'Скопійовано!';
+          setTimeout(() => { copyBtn.textContent = original; }, 1800);
+        } catch (e) {
+          const range = document.createRange();
+          range.selectNodeContents(cmdText);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(range);
+        }
+      });
     }
   </script>
 </body>
