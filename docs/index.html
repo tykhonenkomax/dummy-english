@@ -7,36 +7,36 @@
 <meta name="description" content="Menu bar застосунок для macOS: показує англійські слова з перекладом, поки ти працюєш." />
 <style>
   :root {
-    --bg: #f4f4f6;
-    --card: #ffffff;
-    --text: #1c1c1e;
-    --muted: #6b6b70;
-    --accent: #3b82f6;
-    --accent-dark: #2563eb;
-    --border: rgba(0,0,0,0.08);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #17171a;
-      --card: #222226;
-      --text: #f2f2f3;
-      --muted: #a1a1a6;
-      --accent: #5b9dff;
-      --accent-dark: #7fb1ff;
-      --border: rgba(255,255,255,0.1);
-    }
+    --bg: #000000;
+    --card: rgba(255,255,255,0.06);
+    --text: #f4f4f5;
+    --muted: #a3a3a8;
+    --accent: #ffffff;
+    --accent-dark: #e2e2e5;
+    --border: rgba(255,255,255,0.14);
   }
   * { box-sizing: border-box; }
+  html, body { background: var(--bg); }
   body {
     margin: 0;
-    background: var(--bg);
     color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
     display: flex;
     justify-content: center;
     padding: 48px 16px 80px;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
   }
-  .wrap { max-width: 560px; width: 100%; }
+  #fireworks {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .wrap { max-width: 560px; width: 100%; position: relative; z-index: 1; }
   header { text-align: center; margin-bottom: 28px; }
   header img {
     width: 160px;
@@ -58,18 +58,20 @@
 
   .card {
     background: var(--card);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border: 1px solid var(--border);
     border-radius: 18px;
     padding: 24px;
     margin-top: 24px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
   }
 
   ul.features { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
   ul.features li { display: flex; gap: 10px; font-size: 15px; line-height: 1.4; }
   ul.features li .dot {
     flex: none; width: 22px; height: 22px; border-radius: 50%;
-    background: var(--accent); color: white; font-size: 13px;
+    background: var(--accent); color: #111; font-size: 13px;
     display: flex; align-items: center; justify-content: center; margin-top: 1px;
   }
 
@@ -78,7 +80,7 @@
     text-align: center;
     margin: 28px 0 6px;
     background: var(--accent);
-    color: white;
+    color: #111;
     text-decoration: none;
     font-weight: 700;
     font-size: 17px;
@@ -89,8 +91,8 @@
   }
   .download:hover { background: var(--accent-dark); transform: scale(1.03); }
   @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0.35); }
-    50% { box-shadow: 0 0 0 10px rgba(59,130,246,0); }
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.35); }
+    50% { box-shadow: 0 0 0 10px rgba(255,255,255,0); }
   }
   .download small { display: block; font-weight: 500; font-size: 12px; opacity: .85; margin-top: 3px; }
 
@@ -102,7 +104,7 @@
   .steps h2 { font-size: 14px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0 0 12px; }
   .steps ol { margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.65; }
   .steps code {
-    background: var(--bg);
+    background: rgba(255,255,255,0.1);
     border: 1px solid var(--border);
     border-radius: 5px;
     padding: 1px 6px;
@@ -114,6 +116,7 @@
 </style>
 </head>
 <body>
+  <canvas id="fireworks"></canvas>
   <div class="wrap">
     <header>
       <img src="dance.gif" alt="Bender танцює" />
@@ -149,5 +152,95 @@
       Код і всі релізи — на <a href="https://github.com/tykhonenkomax/dummy-english">GitHub</a>
     </footer>
   </div>
+
+  <script>
+    const canvas = document.getElementById('fireworks');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const colors = ['#ff5e5e', '#5ecbff', '#ffd65e', '#8cff5e', '#ff5ee0', '#ffffff', '#ffa45e'];
+    const gravity = 0.045;
+    const drag = 0.985;
+    let particles = [];
+    let rockets = [];
+
+    function rand(min, max) { return Math.random() * (max - min) + min; }
+
+    function launchRocket() {
+      rockets.push({
+        x: rand(width * 0.1, width * 0.9),
+        y: height + 10,
+        targetY: rand(height * 0.15, height * 0.5),
+        vy: rand(-9.5, -7.5),
+        color: colors[Math.floor(rand(0, colors.length))]
+      });
+    }
+
+    function explode(x, y, color) {
+      const count = 46;
+      for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 * i) / count + rand(-0.1, 0.1);
+        const speed = rand(1.5, 5.5);
+        particles.push({
+          x, y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          color,
+          life: 1,
+          decay: rand(0.012, 0.022)
+        });
+      }
+    }
+
+    function tick() {
+      ctx.clearRect(0, 0, width, height);
+
+      rockets.forEach((r, i) => {
+        r.y += r.vy;
+        r.vy += gravity * 0.5;
+        ctx.beginPath();
+        ctx.fillStyle = r.color;
+        ctx.arc(r.x, r.y, 2.4, 0, Math.PI * 2);
+        ctx.fill();
+        if (r.vy >= 0 || r.y <= r.targetY) {
+          explode(r.x, r.y, r.color);
+          rockets.splice(i, 1);
+        }
+      });
+
+      particles.forEach((p, i) => {
+        p.vx *= drag;
+        p.vy *= drag;
+        p.vy += gravity;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life -= p.decay;
+        if (p.life <= 0) { particles.splice(i, 1); return; }
+        ctx.globalAlpha = Math.max(p.life, 0);
+        ctx.beginPath();
+        ctx.fillStyle = p.color;
+        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      });
+
+      requestAnimationFrame(tick);
+    }
+
+    tick();
+    launchRocket();
+    setInterval(launchRocket, 900);
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) {
+      canvas.style.display = 'none';
+    }
+  </script>
 </body>
 </html>
