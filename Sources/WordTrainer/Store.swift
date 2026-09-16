@@ -3,9 +3,20 @@ import Combine
 
 @MainActor
 final class Store: ObservableObject {
+    /// Free tier: up to this many words total. Above it, addWord() refuses
+    /// unless isPremium is set. $5/year unlock — payment flow TBD (App
+    /// Store vs. Stripe, still being decided), isPremium is a manual
+    /// placeholder toggle until that's wired up.
+    static let freeWordLimit = 10
+
     @Published var words: [Word] = []
     @Published var settings: BucketSettings = .default
     @Published var wordToShow: Word?
+    @Published var isPremium: Bool {
+        didSet { UserDefaults.standard.set(isPremium, forKey: "isPremium") }
+    }
+
+    var canAddMoreWords: Bool { isPremium || words.count < Store.freeWordLimit }
 
     private var timers: [Bucket: Timer] = [:]
 
@@ -13,6 +24,8 @@ final class Store: ObservableObject {
     private let settingsURL: URL
 
     init() {
+        isPremium = UserDefaults.standard.bool(forKey: "isPremium")
+
         let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("WordTrainer", isDirectory: true)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
@@ -49,11 +62,24 @@ final class Store: ObservableObject {
 
     // MARK: - Word management
 
-    func addWord(text: String, translation: String) {
+    @discardableResult
+    func addWord(text: String, translation: String) -> Bool {
+        let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedTranslation = translation.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedText.isEmpty, !trimmedTranslation.isEmpty else { return false }
+        guard canAddMoreWords else { return false }
+        words.append(Word(text: trimmedText, translation: trimmedTranslation))
+        saveWords()
+        return true
+    }
+
+    func updateWord(_ word: Word, text: String, translation: String) {
         let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedTranslation = translation.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedText.isEmpty, !trimmedTranslation.isEmpty else { return }
-        words.append(Word(text: trimmedText, translation: trimmedTranslation))
+        guard let index = words.firstIndex(where: { $0.id == word.id }) else { return }
+        words[index].text = trimmedText
+        words[index].translation = trimmedTranslation
         saveWords()
     }
 

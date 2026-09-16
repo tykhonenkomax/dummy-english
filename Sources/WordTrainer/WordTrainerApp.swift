@@ -8,24 +8,24 @@ struct WordTrainerApp: App {
 
     var body: some Scene {
         MenuBarExtra {
-            Button("Адмінка…") {
+            Button(L(.adminMenuItem)) {
                 appDelegate.showAdmin()
             }
-            Button("Показати слово зараз") {
+            Button(L(.showWordNow)) {
                 appDelegate.showRandomWordNow()
             }
             Divider()
-            Button("Вийти") {
+            Button(L(.quitMenuItem)) {
                 NSApplication.shared.terminate(nil)
             }
         } label: {
-            if let logoImage {
-                Image(nsImage: logoImage)
+            if let barLogoImage {
+                Image(nsImage: barLogoImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 22, height: 22)
+                    .frame(width: 40, height: 16)
             } else {
-                Text("Dummy English")
+                Text("Ghostty English")
             }
         }
     }
@@ -50,17 +50,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func showAdmin() {
         if adminWindow == nil {
             let window = NSWindow(
-                contentRect: NSRect(x: 0, y: 0, width: 780, height: 480),
+                contentRect: NSRect(x: 0, y: 0, width: 960, height: 520),
                 styleMask: [.titled, .closable, .miniaturizable, .resizable],
                 backing: .buffered,
                 defer: false
             )
-            window.title = "Dummy English — Адмінка"
             window.contentView = NSHostingView(rootView: AdminView(store: store))
             window.isReleasedWhenClosed = false
             window.center()
             adminWindow = window
         }
+        adminWindow?.title = "Ghostty English \(L(.adminWindowTitleSuffix))"
         NSApp.activate(ignoringOtherApps: true)
         adminWindow?.makeKeyAndOrderFront(nil)
     }

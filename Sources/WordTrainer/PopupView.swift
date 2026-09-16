@@ -3,18 +3,51 @@ import AppKit
 
 // MARK: - Speech bubble shape
 
-struct SpeechBubbleShape: Shape {
-    var cornerRadius: CGFloat = 18
+/// A rounded card with a soft cloud-like crown of bumps along the top edge
+/// and a small tail pointing at the mascot below.
+struct CloudBubbleShape: Shape {
+    var cornerRadius: CGFloat = 16
     var tailSize: CGFloat = 14
-    var tailPosition: CGFloat = 0.28 // 0...1 horizontal fraction, aligned toward mascot's head
+    var tailPosition: CGFloat = 0.24 // 0...1 horizontal fraction, aligned toward mascot's head
+    var topBumps: Int = 3
+    var bumpDepth: CGFloat = 9
 
     func path(in rect: CGRect) -> Path {
-        let bubbleRect = CGRect(x: rect.minX, y: rect.minY, width: rect.width, height: rect.height - tailSize)
-        var path = Path(roundedRect: bubbleRect, cornerRadius: cornerRadius)
-        let tailX = bubbleRect.minX + bubbleRect.width * tailPosition
-        path.move(to: CGPoint(x: tailX - tailSize * 0.7, y: bubbleRect.maxY - 1))
-        path.addLine(to: CGPoint(x: tailX, y: bubbleRect.maxY + tailSize))
-        path.addLine(to: CGPoint(x: tailX + tailSize * 0.7, y: bubbleRect.maxY - 1))
+        let r = cornerRadius
+        let body = CGRect(x: rect.minX, y: rect.minY, width: rect.width, height: rect.height - tailSize)
+        var path = Path()
+
+        path.move(to: CGPoint(x: body.minX + r, y: body.minY))
+
+        // Cloud-like bumps along the top edge only.
+        let topStart = body.minX + r
+        let topEnd = body.maxX - r
+        let span = (topEnd - topStart) / CGFloat(topBumps)
+        for i in 0..<topBumps {
+            let segStart = CGPoint(x: topStart + span * CGFloat(i), y: body.minY)
+            let segEnd = CGPoint(x: topStart + span * CGFloat(i + 1), y: body.minY)
+            let control = CGPoint(x: (segStart.x + segEnd.x) / 2, y: body.minY - bumpDepth)
+            path.addQuadCurve(to: segEnd, control: control)
+        }
+
+        path.addArc(center: CGPoint(x: body.maxX - r, y: body.minY + r), radius: r,
+                    startAngle: .degrees(-90), endAngle: .degrees(0), clockwise: false)
+        path.addLine(to: CGPoint(x: body.maxX, y: body.maxY - r))
+        path.addArc(center: CGPoint(x: body.maxX - r, y: body.maxY - r), radius: r,
+                    startAngle: .degrees(0), endAngle: .degrees(90), clockwise: false)
+
+        let tailCenterX = body.minX + body.width * tailPosition
+        path.addLine(to: CGPoint(x: tailCenterX + tailSize, y: body.maxY))
+        path.addLine(to: CGPoint(x: tailCenterX, y: body.maxY + tailSize))
+        path.addLine(to: CGPoint(x: tailCenterX - tailSize, y: body.maxY))
+        path.addLine(to: CGPoint(x: body.minX + r, y: body.maxY))
+
+        path.addArc(center: CGPoint(x: body.minX + r, y: body.maxY - r), radius: r,
+                    startAngle: .degrees(90), endAngle: .degrees(180), clockwise: false)
+        path.addLine(to: CGPoint(x: body.minX, y: body.minY + r))
+        path.addArc(center: CGPoint(x: body.minX + r, y: body.minY + r), radius: r,
+                    startAngle: .degrees(180), endAngle: .degrees(270), clockwise: false)
+
         path.closeSubpath()
         return path
     }
@@ -24,9 +57,23 @@ struct SpeechBubbleShape: Shape {
 
 let logoImage: NSImage? = {
     guard let data = Data(base64Encoded: logoPNGBase64) else { return nil }
+    return NSImage(data: data)
+}()
+
+let barLogoImage: NSImage? = {
+    guard let data = Data(base64Encoded: barLogoPNGBase64) else { return nil }
     let image = NSImage(data: data)
-    // Menu bar glyph — pure white, not a template.
-    image?.size = NSSize(width: 22, height: 22)
+    // NSStatusItem sizes its button image from NSImage.size directly, not
+    // from SwiftUI frame modifiers — the raw decoded size (600x247) is far
+    // too large for the menu bar, so the status item was rendering blank.
+    if let native = image?.size, native.width > 0 {
+        let targetHeight: CGFloat = 16
+        image?.size = NSSize(width: targetHeight * native.width / native.height, height: targetHeight)
+    }
+    // Template rendering lets macOS auto-adapt the glyph's color to stay
+    // visible against any menu bar background — a solid-white image can
+    // otherwise vanish against a light bar/wallpaper.
+    image?.isTemplate = true
     return image
 }()
 
@@ -51,38 +98,57 @@ struct PopupView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            VStack(alignment: .leading, spacing: 6) {
-                Text(word.text)
-                    .font(.system(size: 19, weight: .bold))
-                Text(word.translation)
-                    .font(.system(size: 15))
-                    .foregroundStyle(.secondary)
-                Text(word.bucket.rawValue)
-                    .font(.system(size: 10))
-                    .foregroundStyle(.tertiary)
+            ZStack(alignment: .topTrailing) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(word.text)
+                        .font(.system(size: 19, weight: .heavy, design: .rounded))
+                        .foregroundStyle(.white)
+                    Text(word.translation)
+                        .font(.system(size: 14, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.6))
+                    Text(word.bucket.localizedName())
+                        .font(.system(size: 11, weight: .semibold, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.85))
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .overlay(Capsule().stroke(Color.white.opacity(0.3), lineWidth: 1))
+                }
+                .padding(.horizontal, 18)
+                .padding(.top, 16)
+                .padding(.bottom, 26)
+                .frame(width: 250, alignment: .leading)
+                .background(
+                    CloudBubbleShape()
+                        .fill(.ultraThinMaterial)
+                        .environment(\.colorScheme, .dark)
+                )
+                .background(CloudBubbleShape().fill(Color.black.opacity(0.35)))
+                .background(
+                    CloudBubbleShape()
+                        .stroke(Color.white.opacity(0.35), lineWidth: 1.2)
+                )
+                .shadow(color: .black.opacity(0.35), radius: 14, y: 6)
+
+                sparkleDots
+                    .offset(x: 14, y: -16)
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 14)
-            .padding(.bottom, 20)
-            .frame(width: 240, alignment: .leading)
-            .background(
-                SpeechBubbleShape()
-                    .fill(.ultraThinMaterial)
-            )
-            .background(
-                SpeechBubbleShape()
-                    .stroke(Color.primary.opacity(0.08), lineWidth: 1)
-            )
-            .shadow(radius: 10, y: 4)
 
             HStack {
                 MascotView()
                 Spacer()
             }
-            .padding(.leading, 24)
-            .offset(y: -4)
+            .padding(.leading, 20)
+            .offset(y: -6)
         }
         .fixedSize()
+    }
+
+    private var sparkleDots: some View {
+        ZStack {
+            Circle().fill(Color.white.opacity(0.9)).frame(width: 7, height: 7).offset(x: -4, y: 18)
+            Circle().fill(Color.white.opacity(0.7)).frame(width: 5, height: 5).offset(x: 10, y: 8)
+            Circle().fill(Color.white.opacity(0.5)).frame(width: 9, height: 9).offset(x: 4, y: -4)
+        }
     }
 }
 

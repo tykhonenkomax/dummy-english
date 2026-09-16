@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Dummy English</title>
+<title>Ghostty English</title>
 <meta name="description" content="Menu bar застосунок для macOS: показує англійські слова з перекладом, поки ти працюєш." />
 <link rel="icon" type="image/png" href="logo.png" />
 <style>
@@ -243,9 +243,9 @@
   <div class="wrap">
     <div class="card-outer">
       <div class="left-col">
-        <img class="mascot-big" src="menubar-icon.png" alt="Dummy English" />
+        <img class="mascot-big" src="menubar-icon.png" alt="Ghostty English" />
         <div class="wordmark">
-          Dummy<br>English
+          Ghostty<br>English
           <svg viewBox="0 0 160 10" preserveAspectRatio="none"><path d="M4 5 Q 40 -3 80 4 T 156 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </div>
         <p class="left-tagline">Англійські слова, які самі нагадують про себе</p>
@@ -281,15 +281,16 @@
         <div class="install">
           <h2>Установлення</h2>
           <ol>
-            <li>Відкрий <code>Dummy.English.dmg</code> і перетягни застосунок у Applications.</li>
+            <li>Відкрий <code>Ghostty.English.dmg</code> і перетягни застосунок у Applications.</li>
             <li>
               Mac попередить, що не може перевірити розробника (а іноді ще й
               «зависає» на кілька секунд на першому запуску — це нормально).
               Найнадійніше — відкрити Термінал (Cmd+Пробіл → напиши
               <code>Terminal</code> → Enter), вставити цю команду (Cmd+V) і
-              натиснути Enter:
+              натиснути Enter. Вона сама знайде застосунок, навіть якщо він
+              ще не в Applications:
               <div class="copy-cmd">
-                <code id="cmdText">xattr -cr "/Applications/Dummy English.app"</code>
+                <code id="cmdText">xattr -cr ~/Downloads/"Ghostty English.app" ~/Desktop/"Ghostty English.app" "/Applications/Ghostty English.app" 2>/dev/null</code>
                 <button type="button" id="copyCmdBtn">Копіювати</button>
               </div>
             </li>
@@ -309,11 +310,11 @@
       </div>
     </div>
 
-    <a id="downloadBtn" class="download" href="https://github.com/tykhonenkomax/dummy-english/releases/latest/download/Dummy.English.dmg">
+    <a id="downloadBtn" class="download" href="https://github.com/tykhonenkomax/dummy-english/releases/latest/download/Ghostty.English.dmg">
       <span class="icon-badge"><img src="menubar-icon.png" alt="" /></span>
       <span class="label">
         <strong>Скачати тут</strong>
-        <small>Dummy.English.dmg · macOS 13 або новіша</small>
+        <small>Ghostty.English.dmg · macOS 13 або новіша</small>
       </span>
       <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
     </a>

@@ -1,4 +1,4 @@
-# Dummy English
+# Ghostty English
 
 Menu bar застосунок для macOS, який показує англійські слова з перекладом
 у вигляді спливаючої хмарки, поки ти працюєш.
@@ -14,19 +14,20 @@ Menu bar застосунок для macOS, який показує англій
 
 ## Встановлення (готовий білд)
 
-1. Завантаж `Dummy.English.dmg` з розділу [Releases](../../releases) (GitHub замінює пробіл на крапку в імені файлу).
-2. Відкрий DMG, перетягни `Dummy English.app` в Applications.
+1. Завантаж `Ghostty.English.dmg` з розділу [Releases](../../releases) (GitHub замінює пробіл на крапку в імені файлу).
+2. Відкрий DMG, перетягни `Ghostty English.app` в Applications.
 3. Застосунок **не підписаний** сертифікатом Apple Developer (він коштує
    грошей), тому за замовчуванням Gatekeeper не дасть його відкрити, а
    іноді ще й «зависає» на кілька секунд на першому запуску (Not
    Responding) — це нормально, macOS ходить в інтернет перевіряти підпис.
-   Найнадійніше — один раз виконати в терміналі:
-   `xattr -cr "/Applications/Dummy English.app"`
+   Найнадійніше — один раз виконати в терміналі (спрацює незалежно від
+   того, де саме лежить застосунок):
+   `xattr -cr ~/Downloads/"Ghostty English.app" ~/Desktop/"Ghostty English.app" "/Applications/Ghostty English.app" 2>/dev/null`
    Це прибирає позначку карантину повністю, без зависань.
    Альтернатива: правий клік на іконці → **Open**, або
    **System Settings → Privacy & Security** → **Open Anyway**.
 4. Після цього застосунок відкривається звичайним подвійним кліком і сидить
-   у menu bar (біла іконка робота).
+   у menu bar (біла іконка привида).
 
 ## Збірка з коду
 
@@ -38,4 +39,4 @@ cd word-trainer
 ./build-app.sh
 ```
 
-Скрипт збере реліз, спакує `dist/Dummy English.app` і `dist/Dummy English.dmg`.
+Скрипт збере реліз, спакує `dist/Ghostty English.app` і `dist/Ghostty English.dmg`.
