@@ -31,7 +31,8 @@ final class Store: ObservableObject {
             words = decoded
         }
         if let data = try? Data(contentsOf: settingsURL),
-           let decoded = try? JSONDecoder().decode(BucketSettings.self, from: data) {
+           var decoded = try? JSONDecoder().decode(BucketSettings.self, from: data) {
+            decoded.migrateLegacyKeys()
             settings = decoded
         }
     }

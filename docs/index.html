@@ -9,12 +9,10 @@
 <style>
   :root {
     --bg: #000000;
-    --card: rgba(255,255,255,0.06);
+    --card: rgba(255,255,255,0.015);
     --text: #f4f4f5;
-    --muted: #a3a3a8;
-    --accent: #ffffff;
-    --accent-dark: #e2e2e5;
-    --border: rgba(255,255,255,0.14);
+    --muted: #9a9aa0;
+    --border: rgba(255,255,255,0.16);
   }
   * { box-sizing: border-box; }
   html, body { background: var(--bg); }
@@ -24,7 +22,7 @@
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
     display: flex;
     justify-content: center;
-    padding: 48px 16px 80px;
+    padding: 28px 16px;
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
@@ -37,146 +35,224 @@
     z-index: 0;
     pointer-events: none;
   }
-  .wrap { max-width: 560px; width: 100%; position: relative; z-index: 1; }
-  header { text-align: center; margin-bottom: 28px; }
-  header img {
-    width: 160px;
-    border-radius: 20px;
-    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.22));
-    animation: bob 2.2s ease-in-out infinite;
+  .wrap { max-width: 860px; width: 100%; position: relative; z-index: 1; margin: auto; }
+
+  .card-outer {
+    display: flex;
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    background: var(--card);
+    overflow: hidden;
+  }
+
+  .left-col {
+    flex: 0 0 250px;
+    padding: 40px 28px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .mascot-big {
+    width: 110px;
+    margin-bottom: 18px;
+    animation: bob 2.4s ease-in-out infinite;
   }
   @keyframes bob {
-    0%, 100% { transform: translateY(0) rotate(-1.5deg); }
-    50% { transform: translateY(-8px) rotate(1.5deg); }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
   }
-  h1 {
-    font-size: 30px;
+  .wordmark {
+    font-size: 38px;
     font-weight: 800;
-    margin: 12px 0 4px;
-    letter-spacing: -0.02em;
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    position: relative;
+    display: inline-block;
   }
-  .tagline { color: var(--muted); font-size: 16px; margin: 0; }
-
-  .card {
-    background: var(--card);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 24px;
-    margin-top: 24px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  .wordmark svg { display: block; width: 100%; height: 10px; margin-top: 4px; }
+  .left-tagline {
+    color: var(--muted);
+    font-size: 13.5px;
+    line-height: 1.5;
+    margin: 14px 0 0;
   }
 
-  ul.features { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
-  ul.features li { display: flex; gap: 10px; font-size: 15px; line-height: 1.4; }
-  ul.features li .dot {
-    flex: none; width: 22px; height: 22px; border-radius: 50%;
-    background: var(--accent); color: #111; font-size: 13px;
-    display: flex; align-items: center; justify-content: center; margin-top: 1px;
+  .divider-v { flex: none; width: 1px; background: var(--border); align-self: stretch; }
+
+  .right-col { flex: 1; min-width: 0; padding: 36px 36px 30px; }
+  .right-col h1 {
+    font-size: 25px;
+    font-weight: 800;
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+  .right-col > .tagline {
+    color: var(--muted);
+    font-size: 13.5px;
+    line-height: 1.5;
+    margin: 0 0 22px;
+    max-width: 440px;
   }
 
-  .download {
-    display: block;
-    text-align: center;
-    margin: 28px 0 6px;
-    background: var(--accent);
-    color: #111;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 17px;
-    padding: 15px 20px;
-    border-radius: 14px;
-    transition: transform .15s ease, background .15s ease;
-    animation: pulse 2.4s ease-in-out infinite;
+  .feature-list { list-style: none; margin: 0 0 22px; padding: 0; display: grid; gap: 14px; }
+  .feature-list li { display: flex; align-items: flex-start; gap: 14px; }
+  .icon-circle {
+    flex: none;
+    width: 38px; height: 38px;
+    border: 1.5px solid var(--border);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
   }
-  .download:hover { background: var(--accent-dark); transform: scale(1.03); }
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.35); }
-    50% { box-shadow: 0 0 0 10px rgba(255,255,255,0); }
-  }
-  .download small { display: block; font-weight: 500; font-size: 12px; opacity: .85; margin-top: 3px; }
+  .icon-circle svg { width: 17px; height: 17px; }
+  .feature-list h3 { font-size: 14.5px; font-weight: 700; margin: 0 0 2px; }
+  .feature-list p { font-size: 12.5px; color: var(--muted); margin: 0; line-height: 1.35; }
 
-  .steps {
-    margin-top: 22px;
-    padding-top: 18px;
-    border-top: 1px solid var(--border);
-  }
-  .steps h2 { font-size: 14px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0 0 12px; }
-  .steps ol { margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.65; }
-  .steps code {
+  .hr { height: 1px; background: var(--border); margin: 20px 0 18px; }
+
+  .install h2 { font-size: 15px; font-weight: 800; margin: 0 0 8px; }
+  .install ol { margin: 0; padding-left: 20px; font-size: 13px; color: #dcdce0; line-height: 1.85; }
+  .install code {
     background: rgba(255,255,255,0.1);
     border: 1px solid var(--border);
     border-radius: 5px;
-    padding: 1px 6px;
-    font-size: 13px;
+    padding: 0 5px;
+    font-size: 12px;
+    color: var(--text);
   }
 
-  footer { text-align: center; margin-top: 24px; font-size: 13px; color: var(--muted); }
-  footer a { color: var(--muted); }
-
-  .menubar-chip {
-    display: inline-flex;
+  .download {
+    display: flex;
     align-items: center;
-    margin-top: 8px;
-    padding: 6px 14px;
-    background: #2b6cb0;
-    border-radius: 8px;
+    gap: 12px;
+    margin-top: 18px;
+    padding: 14px 18px;
+    border: 1px solid #fff;
+    border-radius: 16px;
+    text-decoration: none;
+    background: #ffffff;
+    color: #0a0a0a;
+    transition: background .15s ease, transform .15s ease;
+    max-width: 860px;
   }
-  .menubar-chip img { height: 22px; width: auto; display: block; }
+  .download:hover { background: #e9e9ea; transform: translateY(-1px); }
+  .download .icon-badge {
+    flex: none;
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    background: #0a0a0a;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .download .icon-badge img { width: 21px; }
+  .download .label { flex: 1; }
+  .download .label strong { display: block; font-size: 15px; font-weight: 800; color: #0a0a0a; }
+  .download .label small { display: block; color: #55555a; font-size: 11.5px; margin-top: 1px; }
+  .download .chevron { flex: none; opacity: .7; color: #0a0a0a; }
 
   .not-mac {
-    margin: 28px 0 6px;
-    padding: 15px 18px;
+    margin-top: 18px;
+    padding: 14px 18px;
     text-align: center;
-    font-size: 14px;
-    line-height: 1.5;
+    font-size: 12.5px;
+    line-height: 1.4;
     color: var(--muted);
-    background: rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.03);
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 16px;
+  }
+
+  .about-note {
+    margin-top: 26px;
+    padding: 20px 24px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--card);
+    font-size: 13px;
+    line-height: 1.65;
+    color: #d4d4d8;
+  }
+  .about-note p { margin: 0 0 10px; }
+  .about-note p:last-child { margin-bottom: 0; }
+
+  footer { text-align: center; margin-top: 18px; font-size: 11.5px; color: var(--muted); }
+  footer a { color: var(--muted); }
+
+  @media (max-width: 640px) {
+    .card-outer { flex-direction: column; }
+    .divider-v { width: auto; height: 1px; }
+    .left-col { padding: 28px 24px 22px; }
+    .right-col { padding: 26px 24px; }
   }
 </style>
 </head>
 <body>
   <canvas id="fireworks"></canvas>
   <div class="wrap">
-    <header>
-      <img src="dance.gif" alt="Bender танцює" />
-      <h1>Dummy English</h1>
-      <p class="tagline">Спливаючі англійські слова прямо на екрані, поки ти працюєш</p>
-    </header>
-
-    <div class="card">
-      <ul class="features">
-        <li><span class="dot">＋</span> Додаєш слова та переклад у простій адмінці</li>
-        <li><span class="dot">📊</span> Розкладаєш по трьох колонках: погано знаю / середньо / добре знаю</li>
-        <li><span class="dot">⏱</span> Для кожної колонки — свій інтервал, коли слово спливає на екрані</li>
-        <li><span class="dot">💾</span> База зберігається локально, є експорт/імпорт бекапу в файл</li>
-      </ul>
-
-      <a id="downloadBtn" class="download" href="https://github.com/tykhonenkomax/dummy-english/releases/latest/download/Dummy.English.dmg">
-        Завантажити для Mac
-        <small>Dummy.English.dmg · macOS 13+</small>
-      </a>
-      <div id="notMac" class="not-mac" hidden>
-        Це застосунок тільки для macOS — на цьому пристрої його не встановити.
+    <div class="card-outer">
+      <div class="left-col">
+        <img class="mascot-big" src="menubar-icon.png" alt="Dummy English" />
+        <div class="wordmark">
+          Dummy<br>English
+          <svg viewBox="0 0 160 10" preserveAspectRatio="none"><path d="M4 5 Q 40 -3 80 4 T 156 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <p class="left-tagline">Англійські слова, які самі нагадують про себе</p>
       </div>
 
-      <div id="steps" class="steps">
-        <h2>Встановлення</h2>
-        <ol>
-          <li>Відкрий завантажений <code>Dummy.English.dmg</code> і перетягни іконку в <b>Applications</b>.</li>
-          <li>Застосунок не підписаний сертифікатом Apple, тому при першому запуску звичайний подвійний клік не спрацює.</li>
-          <li>Замість цього: правий клік (або Control+клік) на іконці → <b>Open</b> → у вікні, що з'явиться, ще раз натисни <b>Open</b>.</li>
+      <div class="divider-v"></div>
+
+      <div class="right-col">
+        <h1>Запам'ятовуй слова без зубріння</h1>
+        <p class="tagline">Додавай слова й переклад — застосунок показуватиме їх на екрані з потрібною частотою.</p>
+
+        <ul class="feature-list">
           <li>
-            Все, застосунок оселиться у меню-барі зверху екрана — шукай там такий логотип:
-            <div class="menubar-chip">
-              <img src="menubar-icon.png" alt="Іконка Dummy English у меню-барі" />
-            </div>
+            <span class="icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+            <div><h3>Додавай слова та переклад</h3><p>у простій панелі керування.</p></div>
           </li>
-        </ol>
+          <li>
+            <span class="icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M12 20V4M20 20v-7"/></svg></span>
+            <div><h3>Розподіляй слова за рівнем знання</h3><p>«Не знаю», «Вчу» або «Знаю».</p></div>
+          </li>
+          <li>
+            <span class="icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
+            <div><h3>Налаштовуй інтервали показу</h3><p>окремо для кожної групи слів.</p></div>
+          </li>
+          <li>
+            <span class="icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v6h8V4M8 20v-6h8v6"/></svg></span>
+            <div><h3>Зберігай дані локально</h3><p>та експортуй резервну копію у файл.</p></div>
+          </li>
+        </ul>
+
+        <div class="hr"></div>
+
+        <div class="install">
+          <h2>Установлення</h2>
+          <ol>
+            <li>Відкрий <code>Dummy.English.dmg</code> і перетягни застосунок у Applications.</li>
+            <li>Під час першого запуску: правий клік → Open → Open.</li>
+            <li>Після запуску відкривай застосунок через значок у меню-барі.</li>
+          </ol>
+        </div>
       </div>
+    </div>
+
+    <a id="downloadBtn" class="download" href="https://github.com/tykhonenkomax/dummy-english/releases/latest/download/Dummy.English.dmg">
+      <span class="icon-badge"><img src="menubar-icon.png" alt="" /></span>
+      <span class="label">
+        <strong>Завантажити для Mac</strong>
+        <small>Dummy.English.dmg · macOS 13 або новіша</small>
+      </span>
+      <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+    </a>
+    <div id="notMac" class="not-mac" hidden>
+      Це застосунок тільки для macOS — на цьому пристрої його не встановити.
+    </div>
+
+    <div class="about-note">
+      <p>Built the hard way — through years of suffering, confusion, and questionable English decisions. 😅</p>
+      <p>I made this little app based on my own experience learning English, hoping it can make the journey a little easier for someone else.</p>
+      <p>If it helps you learn even one new word — my years of pain were not completely wasted. 😂🇬🇧</p>
     </div>
 
     <footer>
@@ -278,7 +354,6 @@
     if (!isMacDesktop) {
       document.getElementById('downloadBtn').hidden = true;
       document.getElementById('notMac').hidden = false;
-      document.getElementById('steps').hidden = true;
     }
   </script>
 </body>

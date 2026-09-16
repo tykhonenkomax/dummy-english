@@ -23,7 +23,7 @@ struct WordTrainerApp: App {
                 Image(nsImage: logoImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 18, height: 18)
+                    .frame(width: 22, height: 22)
             } else {
                 Text("Dummy English")
             }

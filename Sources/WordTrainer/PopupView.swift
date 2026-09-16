@@ -22,24 +22,19 @@ struct SpeechBubbleShape: Shape {
 
 // MARK: - Mascot
 
-let benderImage: NSImage? = {
-    guard let url = Bundle.module.url(forResource: "bender", withExtension: "png") else { return nil }
-    return NSImage(contentsOf: url)
-}()
-
 let logoImage: NSImage? = {
     guard let url = Bundle.module.url(forResource: "logo", withExtension: "png") else { return nil }
     let image = NSImage(contentsOf: url)
-    // @2x (36x36 px) square asset for a standard 18x18pt menu bar glyph — pure white, not a template.
-    image?.size = NSSize(width: 18, height: 18)
+    // @2x (36x36 px) square asset for a menu bar glyph — pure white, not a template.
+    image?.size = NSSize(width: 22, height: 22)
     return image
 }()
 
 struct MascotView: View {
     var body: some View {
         Group {
-            if let benderImage {
-                Image(nsImage: benderImage)
+            if let logoImage {
+                Image(nsImage: logoImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 56)

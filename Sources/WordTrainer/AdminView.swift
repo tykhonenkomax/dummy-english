@@ -36,11 +36,11 @@ struct AdminView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 8)
 
-            if let benderImage {
-                Image(nsImage: benderImage)
+            if let logoImage {
+                Image(nsImage: logoImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 120)
+                    .frame(width: 96)
                     .shadow(radius: 6, y: 3)
             }
             Spacer()
