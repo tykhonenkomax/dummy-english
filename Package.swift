@@ -8,7 +8,7 @@ let package = Package(
         .executableTarget(
             name: "WordTrainer",
             path: "Sources/WordTrainer",
-            resources: [.copy("Resources/bender.png")]
+            resources: [.copy("Resources/bender.png"), .copy("Resources/logo.png")]
         )
     ]
 )

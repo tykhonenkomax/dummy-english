@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Dummy English</title>
 <meta name="description" content="Menu bar застосунок для macOS: показує англійські слова з перекладом, поки ти працюєш." />
+<link rel="icon" type="image/png" href="logo.png" />
 <style>
   :root {
     --bg: #000000;
@@ -113,6 +114,28 @@
 
   footer { text-align: center; margin-top: 24px; font-size: 13px; color: var(--muted); }
   footer a { color: var(--muted); }
+
+  .menubar-chip {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 8px;
+    padding: 6px 14px;
+    background: #2b6cb0;
+    border-radius: 8px;
+  }
+  .menubar-chip img { height: 22px; width: auto; display: block; }
+
+  .not-mac {
+    margin: 28px 0 6px;
+    padding: 15px 18px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--muted);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
 </style>
 </head>
 <body>
@@ -132,18 +155,26 @@
         <li><span class="dot">💾</span> База зберігається локально, є експорт/імпорт бекапу в файл</li>
       </ul>
 
-      <a class="download" href="https://github.com/tykhonenkomax/dummy-english/releases/latest/download/WordTrainer.dmg">
+      <a id="downloadBtn" class="download" href="https://github.com/tykhonenkomax/dummy-english/releases/latest/download/Dummy.English.dmg">
         Завантажити для Mac
-        <small>WordTrainer.dmg · macOS 13+</small>
+        <small>Dummy.English.dmg · macOS 13+</small>
       </a>
+      <div id="notMac" class="not-mac" hidden>
+        Це застосунок тільки для macOS — на цьому пристрої його не встановити.
+      </div>
 
-      <div class="steps">
+      <div id="steps" class="steps">
         <h2>Встановлення</h2>
         <ol>
-          <li>Відкрий завантажений <code>WordTrainer.dmg</code> і перетягни іконку в <b>Applications</b>.</li>
+          <li>Відкрий завантажений <code>Dummy.English.dmg</code> і перетягни іконку в <b>Applications</b>.</li>
           <li>Застосунок не підписаний сертифікатом Apple, тому при першому запуску звичайний подвійний клік не спрацює.</li>
           <li>Замість цього: правий клік (або Control+клік) на іконці → <b>Open</b> → у вікні, що з'явиться, ще раз натисни <b>Open</b>.</li>
-          <li>Все, застосунок оселиться у меню-барі зверху екрана (значок "abc").</li>
+          <li>
+            Все, застосунок оселиться у меню-барі зверху екрана — шукай там такий логотип:
+            <div class="menubar-chip">
+              <img src="menubar-icon.png" alt="Іконка Dummy English у меню-барі" />
+            </div>
+          </li>
         </ol>
       </div>
     </div>
@@ -240,6 +271,14 @@
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduceMotion) {
       canvas.style.display = 'none';
+    }
+
+    const isIpadOS = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+    const isMacDesktop = /Mac/.test(navigator.userAgent) && !/iPhone|iPad|iPod|Android/.test(navigator.userAgent) && !isIpadOS;
+    if (!isMacDesktop) {
+      document.getElementById('downloadBtn').hidden = true;
+      document.getElementById('notMac').hidden = false;
+      document.getElementById('steps').hidden = true;
     }
   </script>
 </body>

@@ -14,13 +14,13 @@ Menu bar застосунок для macOS, який показує англій
 
 ## Встановлення (готовий білд)
 
-1. Завантаж `WordTrainer.dmg` з розділу [Releases](../../releases).
-2. Відкрий DMG, перетягни `WordTrainer.app` в Applications.
+1. Завантаж `Dummy.English.dmg` з розділу [Releases](../../releases) (GitHub замінює пробіл на крапку в імені файлу).
+2. Відкрий DMG, перетягни `Dummy English.app` в Applications.
 3. Застосунок **не підписаний** сертифікатом Apple Developer (він коштує
    грошей), тому за замовчуванням Gatekeeper не дасть його відкрити.
    Один раз зроби одне з двох:
    - Правий клік на іконці → **Open** → підтвердити у вікні, що з'явиться;
-   - або в терміналі: `xattr -cr /Applications/WordTrainer.app`
+   - або в терміналі: `xattr -cr "/Applications/Dummy English.app"`
 4. Після цього застосунок відкривається звичайним подвійним кліком і сидить
    у menu bar (іконка "abc").
 
@@ -34,4 +34,4 @@ cd word-trainer
 ./build-app.sh
 ```
 
-Скрипт збере реліз, спакує `dist/WordTrainer.app` і `dist/WordTrainer.dmg`.
+Скрипт збере реліз, спакує `dist/Dummy English.app` і `dist/Dummy English.dmg`.

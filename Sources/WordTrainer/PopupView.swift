@@ -27,6 +27,14 @@ let benderImage: NSImage? = {
     return NSImage(contentsOf: url)
 }()
 
+let logoImage: NSImage? = {
+    guard let url = Bundle.module.url(forResource: "logo", withExtension: "png") else { return nil }
+    let image = NSImage(contentsOf: url)
+    // @2x (36x36 px) square asset for a standard 18x18pt menu bar glyph — pure white, not a template.
+    image?.size = NSSize(width: 18, height: 18)
+    return image
+}()
+
 struct MascotView: View {
     var body: some View {
         Group {

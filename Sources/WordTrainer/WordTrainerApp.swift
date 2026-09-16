@@ -7,7 +7,7 @@ struct WordTrainerApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {
-        MenuBarExtra("Word Trainer", systemImage: "textformat.abc") {
+        MenuBarExtra {
             Button("Адмінка…") {
                 appDelegate.showAdmin()
             }
@@ -17,6 +17,15 @@ struct WordTrainerApp: App {
             Divider()
             Button("Вийти") {
                 NSApplication.shared.terminate(nil)
+            }
+        } label: {
+            if let logoImage {
+                Image(nsImage: logoImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 18, height: 18)
+            } else {
+                Text("Dummy English")
             }
         }
     }
@@ -46,7 +55,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 backing: .buffered,
                 defer: false
             )
-            window.title = "Word Trainer — Адмінка"
+            window.title = "Dummy English — Адмінка"
             window.contentView = NSHostingView(rootView: AdminView(store: store))
             window.isReleasedWhenClosed = false
             window.center()

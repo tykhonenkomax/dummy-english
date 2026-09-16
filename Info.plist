@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key>
-    <string>WordTrainer</string>
+    <string>Dummy English</string>
     <key>CFBundleDisplayName</key>
-    <string>Word Trainer</string>
+    <string>Dummy English</string>
     <key>CFBundleIdentifier</key>
     <string>com.maksym.wordtrainer</string>
     <key>CFBundleExecutable</key>
