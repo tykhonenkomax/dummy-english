@@ -21,13 +21,14 @@ mkdir -p "$APP_BUNDLE/Contents/MacOS"
 cp "$RELEASE_DIR/$PRODUCT_NAME" "$APP_BUNDLE/Contents/MacOS/$PRODUCT_NAME"
 cp Info.plist "$APP_BUNDLE/Contents/Info.plist"
 
-# The SwiftPM resource bundle must sit next to Contents/ inside the .app,
-# matching Bundle.main.bundleURL + "WordTrainer_WordTrainer.bundle".
-if [ -d "$RELEASE_DIR/${PRODUCT_NAME}_${PRODUCT_NAME}.bundle" ]; then
-    cp -R "$RELEASE_DIR/${PRODUCT_NAME}_${PRODUCT_NAME}.bundle" "$APP_BUNDLE/${PRODUCT_NAME}_${PRODUCT_NAME}.bundle"
-fi
-
 chmod +x "$APP_BUNDLE/Contents/MacOS/$PRODUCT_NAME"
+
+# Ad-hoc sign so Gatekeeper shows the normal "unidentified developer"
+# prompt (bypassable via right-click > Open) instead of failing outright
+# with "is damaged and can't be opened" for a completely unsigned binary.
+# Only works reliably on a bundle with nothing outside Contents/.
+echo "==> Ad-hoc signing…"
+codesign --force --deep --sign - "$APP_BUNDLE"
 
 echo "==> App bundle ready at $APP_BUNDLE"
 

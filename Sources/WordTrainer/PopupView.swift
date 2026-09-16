@@ -23,9 +23,9 @@ struct SpeechBubbleShape: Shape {
 // MARK: - Mascot
 
 let logoImage: NSImage? = {
-    guard let url = Bundle.module.url(forResource: "logo", withExtension: "png") else { return nil }
-    let image = NSImage(contentsOf: url)
-    // @2x (36x36 px) square asset for a menu bar glyph — pure white, not a template.
+    guard let data = Data(base64Encoded: logoPNGBase64) else { return nil }
+    let image = NSImage(data: data)
+    // Menu bar glyph — pure white, not a template.
     image?.size = NSSize(width: 22, height: 22)
     return image
 }()

@@ -7,8 +7,7 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "WordTrainer",
-            path: "Sources/WordTrainer",
-            resources: [.copy("Resources/logo.png")]
+            path: "Sources/WordTrainer"
         )
     ]
 )
