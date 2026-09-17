@@ -32,7 +32,6 @@ struct AdminView: View {
 
     @State private var newWord = ""
     @State private var newTranslation = ""
-    @State private var showLimitBanner = false
 
     var body: some View {
         HStack(spacing: 0) {
@@ -40,9 +39,6 @@ struct AdminView: View {
             VStack(spacing: 0) {
                 toolbar
                 addForm
-                if showLimitBanner {
-                    limitBanner
-                }
                 HStack(alignment: .top, spacing: 12) {
                     ForEach(Bucket.allCases) { bucket in
                         BucketColumn(store: store, bucket: bucket)
@@ -73,7 +69,7 @@ struct AdminView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 8)
 
-            Text("\(store.words.count)\(store.isPremium ? "" : "/\(Store.freeWordLimit)") \(loc.t(.wordsCountSuffix))")
+            Text("\(store.words.count) \(loc.t(.wordsCountSuffix))")
                 .font(.system(size: 12, weight: .medium, design: .rounded))
                 .foregroundStyle(Palette.muted)
 
@@ -138,27 +134,6 @@ struct AdminView: View {
         .padding(.bottom, 4)
     }
 
-    private var limitBanner: some View {
-        HStack(spacing: 10) {
-            Image(systemName: "lock.fill")
-                .foregroundStyle(Palette.accent)
-            Text(String(format: loc.t(.limitBannerText), Store.freeWordLimit))
-                .font(.system(size: 12.5, weight: .medium, design: .rounded))
-                .foregroundStyle(.white)
-            Spacer(minLength: 8)
-            PillButton(title: loc.t(.learnMoreButton), filled: true) {
-                NSWorkspace.shared.open(URL(string: "https://tykhonenkomax.github.io/dummy-english/")!)
-            }
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .background(Palette.accent.opacity(0.15))
-        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Palette.accent.opacity(0.4), lineWidth: 1))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .padding(.horizontal, 16)
-        .padding(.top, 8)
-    }
-
     private func dropboxIfAvailable() -> URL? {
         let dropbox = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Dropbox")
         return FileManager.default.fileExists(atPath: dropbox.path) ? dropbox : nil
@@ -203,13 +178,9 @@ struct AdminView: View {
             RoundedTextField(placeholder: loc.t(.wordPlaceholder), text: $newWord)
             RoundedTextField(placeholder: loc.t(.translationPlaceholder), text: $newTranslation)
             PillButton(title: loc.t(.addButton), filled: true) {
-                let added = store.addWord(text: newWord, translation: newTranslation)
-                if added {
+                if store.addWord(text: newWord, translation: newTranslation) {
                     newWord = ""
                     newTranslation = ""
-                    showLimitBanner = false
-                } else if !store.canAddMoreWords {
-                    showLimitBanner = true
                 }
             }
             .disabled(newWord.trimmingCharacters(in: .whitespaces).isEmpty
@@ -217,7 +188,6 @@ struct AdminView: View {
             .keyboardShortcut(.return, modifiers: [])
         }
         .padding(16)
-        .onAppear { showLimitBanner = !store.canAddMoreWords }
     }
 }
 

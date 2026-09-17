@@ -3,29 +3,19 @@ import Combine
 
 @MainActor
 final class Store: ObservableObject {
-    /// Free tier: up to this many words total. Above it, addWord() refuses
-    /// unless isPremium is set. $5/year unlock — payment flow TBD (App
-    /// Store vs. Stripe, still being decided), isPremium is a manual
-    /// placeholder toggle until that's wired up.
-    static let freeWordLimit = 10
-
     @Published var words: [Word] = []
     @Published var settings: BucketSettings = .default
     @Published var wordToShow: Word?
-    @Published var isPremium: Bool {
-        didSet { UserDefaults.standard.set(isPremium, forKey: "isPremium") }
-    }
-
-    var canAddMoreWords: Bool { isPremium || words.count < Store.freeWordLimit }
 
     private var timers: [Bucket: Timer] = [:]
+    /// Shuffled draw order per bucket — every word is shown once before any
+    /// repeat, instead of a plain random pick that can favor the same few.
+    private var upcomingQueues: [Bucket: [UUID]] = [:]
 
     private let wordsURL: URL
     private let settingsURL: URL
 
     init() {
-        isPremium = UserDefaults.standard.bool(forKey: "isPremium")
-
         let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("WordTrainer", isDirectory: true)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
@@ -67,7 +57,6 @@ final class Store: ObservableObject {
         let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedTranslation = translation.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedText.isEmpty, !trimmedTranslation.isEmpty else { return false }
-        guard canAddMoreWords else { return false }
         words.append(Word(text: trimmedText, translation: trimmedTranslation))
         saveWords()
         return true
@@ -126,8 +115,20 @@ final class Store: ObservableObject {
 
     private func popRandomWord(from bucket: Bucket) {
         let candidates = words(in: bucket)
-        guard let word = candidates.randomElement() else { return }
-        wordToShow = word
+        guard !candidates.isEmpty else { return }
+        let candidateIDs = Set(candidates.map(\.id))
+
+        var queue = (upcomingQueues[bucket] ?? []).filter { candidateIDs.contains($0) }
+        if queue.isEmpty {
+            queue = candidates.map(\.id).shuffled()
+        }
+
+        let nextID = queue.removeFirst()
+        upcomingQueues[bucket] = queue
+
+        if let word = candidates.first(where: { $0.id == nextID }) {
+            wordToShow = word
+        }
     }
 
     // MARK: - Backup / Restore

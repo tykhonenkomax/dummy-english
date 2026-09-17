@@ -42,6 +42,10 @@ ln -s /Applications "$DMG_STAGE/Applications"
 
 DMG_PATH="dist/${DISPLAY_NAME}.dmg"
 rm -f "$DMG_PATH"
-hdiutil create -volname "$DISPLAY_NAME" -srcfolder "$DMG_STAGE" -ov -format UDZO "$DMG_PATH"
+# A plain "$DISPLAY_NAME" volname sometimes collides with stale
+# DiskArbitration mount-point state from repeated mount/unmount cycles
+# during testing; a distinct label sidesteps that without affecting the
+# .app or .dmg filenames.
+hdiutil create -volname "${DISPLAY_NAME} Installer" -srcfolder "$DMG_STAGE" -ov -format UDZO "$DMG_PATH"
 
 echo "==> Done: $DMG_PATH"
